@@ -64,9 +64,5 @@ def cli_model(args):
     )
 
 if __name__ == '__main__':
-    # ='914086859@qq.com'
-    
     input_file,output_file,identifier,auth_email,pvalue,count,category = cli_model(sys.argv[1:])
-
-    #parse and print chartReport
     get_chart_report(input_file=input_file, identifier=identifier, output_file= output_file, auth_email=auth_email, p_value=pvalue, count=count, category=category)
