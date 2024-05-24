@@ -2,9 +2,9 @@
 
 ## 简介
 
-david_analysis
+david_analysis 富集通路提取脚本
 
-## Tip 运行前请先确保python环境中存在 pandas, suds-jurko(只支持python3.0 - 3.9版本) 依赖
+## Tip 运行前请先确保python环境中存在 pandas, zeep 依赖
 
 ### 支持参数
 
@@ -21,5 +21,5 @@ david_analysis
 ### 使用例子
 
 ```bash
-python main.py --input_file "test.txt" --auth_email "xxxxxxxxx@qq.com"
+python src/david_analysis --input_file "test.txt" --auth_email "xxxxxxxxx@qq.com"
 ```
