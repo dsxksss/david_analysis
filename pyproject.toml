@@ -15,7 +15,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.rye.scripts]
-dev = "rye run david_analysis --input 'test.txt' --auth_email '914086859@qq.com'"
+dev_gene = "rye run david_analysis --input 'genes.txt' --auth_email '914086859@qq.com'"
+dev_uniprot = "rye run david_analysis --input 'uniprotids.txt' --auth_email '914086859@qq.com' --identifier 'UNIPROT_ACCESSION'"
 
 [tool.rye]
 managed = true
