@@ -114,8 +114,8 @@ def cli_model(args):
     )
     parser.add_argument(
         "--identifier",
-        default="OFFICIAL_GENE_SYMBOL",
-        help="输入文件中数据的类型, 默认OFFICIAL_GENE_SYMBOL",
+        default="UNIPROT_ACCESSION",
+        help="输入文件中数据的类型, 默认UNIPROT_ACCESSION",
     )
     parser.add_argument("--pvalue", default=0.1, help="设定pvalue值, 默认0.1")
     parser.add_argument("--count", default=2, help="设定最少数量阈值, 默认2")

@@ -16,7 +16,7 @@ build-backend = "hatchling.build"
 
 [tool.rye.scripts]
 dev_gene = "rye run david_analysis --input 'genes.txt'"
-dev_uniprot = "rye run david_analysis --input 'uniprotids.txt' --identifier 'UNIPROT_ACCESSION'"
+dev_uniprot = "rye run david_analysis --input 'uniprotids.txt'"
 
 [tool.rye]
 managed = true
