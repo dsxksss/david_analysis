@@ -22,34 +22,42 @@ def read_file(file_path, identifier):
 
 
 def get_chart_report(
-    input_file, output_file, auth_email, identifier, p_value, count, category, species
+    input_file, output_file, identifier, p_value, count, category, species
 ):
     try:
         client = Client(
             "https://david.ncifcrf.gov/webservice/services/DAVIDWebService?wsdl"
         )
-        client.service.authenticate(auth_email)
+        client.service.authenticate("914086859@qq.com")
         input_ids = read_file(input_file, identifier)
         print("Input IDs:", input_ids)  # Debug: print input IDs
 
         client.service.setCategories(category)
         print("Setting categories:", category)  # Debug: print categories
 
-        if identifier == "OFFICIAL_GENE_SYMBOL":
-            client.service.setCurrentSpecies(species)
-            print("Setting species:", species)  # Debug: print species
+        support_identifiers = client.service.getConversionTypes().split(",")
+        if identifier not in support_identifiers:
+            raise ValueError(
+                f"Support identifiers only has {support_identifiers}, but got {identifier}"
+            )
+
+        # TODO 待优化
+        # if identifier == "OFFICIAL_GENE_SYMBOL":
+        #     client.service.setCurrentSpecies(species)
+        #     print("Setting species:", species)  # Debug: print species
 
         client.service.addList(input_ids, identifier, "david_webservice_added", 0)
 
         chartReport = client.service.getChartReport(p_value, count)
-        
+        print("Setting p_value and count:", p_value, count)  # Debug: print
+
         if not chartReport:
-            print("No chart report returned")  # Debug: print if no chart report
+            sys.stderr.write(
+                "No chart report returned\n"
+            )  # Debug: print if no chart report
             return
         else:
-            print(
-                f"Chart report has {len(chartReport)} records"
-            )
+            print(f"Chart report has {len(chartReport)} records")
 
         with open(output_file, "w") as w:
             w.write(
@@ -87,21 +95,22 @@ def get_chart_report(
                 w.write("\t".join(rowList) + "\n")
             print("Write file to:", output_file)
     except exceptions.Error as e:
-        print("Get chart eeport error:", e)  # Debug: print Zeep error
+        sys.stderr.write(f"Get chart port error: {e}\n")  # Debug: print Zeep error
+    except ValueError as e:
+        sys.stderr.write(f"{e}\n")
+        sys.exit(100)
     except Exception as e:
-        print("Unexpected error:", e)  # Debug: print any other unexpected error
-        raise Exception("Unexpected error:", e) # Debug: print
+        raise Exception("Unexpected error:", e)  # Debug: print
 
 
 def cli_model(args):
     parser = argparse.ArgumentParser(description="David Analysis Command Line Tool")
 
     parser.add_argument("--input_file", required=True, help="输入文件名称")
-    parser.add_argument("--auth_email", required=True, help="验证邮箱")
     parser.add_argument(
         "--output_file",
-        default="chartReport.csv",
-        help="输出文件名称, 默认chartReport.csv",
+        default="chartReport.tsv",
+        help="输出文件名称, 默认chartReport.tsv",
     )
     parser.add_argument(
         "--identifier",
@@ -127,7 +136,6 @@ def cli_model(args):
         parsed_args.input_file,
         parsed_args.output_file,
         parsed_args.identifier,
-        parsed_args.auth_email,
         parsed_args.pvalue,
         parsed_args.count,
         parsed_args.category,
@@ -140,13 +148,12 @@ def main() -> int:
         input_file,
         output_file,
         identifier,
-        auth_email,
         pvalue,
         count,
         category,
         species,
     ) = cli_model(sys.argv[1:])
-    max_retry = 5
+    max_retry = 10
     retry_sleep = 0.5
     current_retry = 0
 
@@ -156,16 +163,24 @@ def main() -> int:
                 input_file=input_file,
                 identifier=identifier,
                 output_file=output_file,
-                auth_email=auth_email,
                 p_value=pvalue,
                 count=count,
                 category=category,
                 species=species,
             )
             return 0
-        except Exception as e:
-            print("Connecting failed, retrying...", e)  # Debug: print connection error
+        except Exception as _:
+            print("Connecting failed, retrying...\n")  # Debug: print connection error
             current_retry += 1
             sleep(retry_sleep)
 
-    return 1
+    if current_retry >= max_retry:
+        sys.stderr.write(
+            "Connecting failed, retry count max!"
+        )  # Debug: print connection error
+
+    sys.stderr.write(
+        "Connecting failed, please check your configuration and input file. try again!\n"
+    )
+
+    return 100
