@@ -117,8 +117,10 @@ def cli_model(args):
         default="UNIPROT_ACCESSION",
         help="输入文件中数据的类型, 默认UNIPROT_ACCESSION",
     )
-    parser.add_argument("--pvalue", default=0.1, help="设定pvalue值, 默认0.1")
-    parser.add_argument("--count", default=2, help="设定最少数量阈值, 默认2")
+    parser.add_argument(
+        "--pvalue", default=0.1, type=float, help="设定pvalue值, 默认0.1"
+    )
+    parser.add_argument("--count", default=2, type=int, help="设定最少数量阈值, 默认2")
     parser.add_argument(
         "--category",
         default="GOTERM_BP_DIRECT,GOTERM_CC_DIRECT,GOTERM_MF_DIRECT,KEGG_PATHWAY",
